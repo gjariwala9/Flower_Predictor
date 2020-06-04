@@ -5,8 +5,8 @@ from wtforms import TextField, SubmitField
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import joblib
-physical_devices = tf.config.list_physical_devices('GPU') 
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# physical_devices = tf.config.list_physical_devices('GPU') 
+# tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 
 def return_prediction(model, scaler, sample_json):
@@ -35,12 +35,6 @@ class FlowerForm(FlaskForm):
 	pet_wid = TextField('Petal Width')
 
 	submit = SubmitField("Analyze")
-
-
-
-
-
-
 
 @app.route("/",methods=['GET','POST'])
 def index():
