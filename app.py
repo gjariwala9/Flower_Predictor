@@ -1,7 +1,8 @@
-from flask import Flask, render_template, session, url_for, redirect
+from flask import Flask, render_template, session, url_for, redirect, flash
 import numpy as np
 from flask_wtf import FlaskForm
 from wtforms import TextField, SubmitField
+from wtforms.validators import DataRequired
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import joblib
@@ -29,12 +30,12 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
 
 class FlowerForm(FlaskForm):
-	sep_len = TextField('Sepal Length')
-	sep_wid = TextField('Sepal Width')
-	pet_len = TextField('Petal Length')
-	pet_wid = TextField('Petal Width')
+	sep_len = TextField('Sepal Length', validators=[DataRequired()])
+	sep_wid = TextField('Sepal Width', validators=[DataRequired()])
+	pet_len = TextField('Petal Length', validators=[DataRequired()])
+	pet_wid = TextField('Petal Width', validators=[DataRequired()])
 
-	submit = SubmitField("Analyze")
+	submit = SubmitField("Predict")
 
 @app.route("/",methods=['GET','POST'])
 def index():
@@ -42,14 +43,18 @@ def index():
 	form = FlowerForm()
 
 	if form.validate_on_submit():
+		try:
 
-		session['sep_len'] = form.sep_len.data
-		session['sep_wid'] = form.sep_wid.data
-		session['pet_len'] = form.pet_len.data
-		session['pet_wid'] = form.pet_wid.data 
+			session['sep_len'] = float(form.sep_len.data)
+			session['sep_wid'] = float(form.sep_wid.data)
+			session['pet_len'] = float(form.pet_len.data)
+			session['pet_wid'] = float(form.pet_wid.data)
+			return redirect(url_for("prediction"))
 
-		return redirect(url_for("prediction"))
+		except ValueError:
+			flash('Invalid Input. Input should be a number.', 'danger')
 
+	
 	return render_template('home.html',form=form)
 
 
@@ -60,15 +65,34 @@ flower_scaler = joblib.load('scaler.pkl')
 @app.route('/prediction')
 def prediction():
 	content = {}
-	content['sepal_length'] = float(session['sep_len'])
-	content['sepal_width'] = float(session['sep_wid'])
-	content['petal_length'] = float(session['pet_len'])
-	content['petal_width'] = float(session['pet_wid'])
+	try:
+		content['sepal_length'] = float(session['sep_len'])
+		content['sepal_width'] = float(session['sep_wid'])
+		content['petal_length'] = float(session['pet_len'])
+		content['petal_width'] = float(session['pet_wid'])
 
-	results = return_prediction(flower_model, flower_scaler, content)
+		results = return_prediction(flower_model, flower_scaler, content)
+	except KeyError:
+		flash('Give some input first.', 'danger')
+		return redirect(url_for("index"))
 
 	return render_template('prediction.html', results=results)
 
 
+@app.errorhandler(404)
+def error_404(error):
+	return render_template('errors/404.html'), 404
+
+@app.errorhandler(403)
+def error_403(error):
+	return render_template('errors/403.html'), 403
+
+@app.errorhandler(500)
+def error_500(error):
+	return render_template('errors/500.html'), 500
+
+
 if __name__=='__main__':
 	app.run(threaded=True, port=5000)	
+
+

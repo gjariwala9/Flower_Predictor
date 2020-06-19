@@ -1,8 +1,33 @@
-<h1>Thank You. Here is the Information You Gave:</h1>
-<ul>
-	<li>Sepal Length: {{session['sep_len']}}</li>
-	<li>Sepal Width:  {{session['sep_wid']}}</li>
-	<li>Petal Length: {{session['pet_len']}}</li>
-	<li>Petal Width:  {{session['pet_wid']}}</li>
-</ul>
-<h2>Your Predicted Flower Class is: {{results}}</h2>
+{% extends "layout.html" %}
+{% block content %}
+	<br><br>
+	<div class="container">
+		<div class="row text-center">
+			<h1 class="predicted-title">Here is the Information You Gave:</h1>
+		</div>
+		<div class="row text-center">
+			<ul id="data-given">
+				<li>Sepal Length: {{session['sep_len']}}</li>
+				<li>Sepal Width:  {{session['sep_wid']}}</li>
+				<li>Petal Length: {{session['pet_len']}}</li>
+				<li>Petal Width:  {{session['pet_wid']}}</li>
+			</ul>
+		</div>
+		<div class="row text-center">
+			<h1 class="predicted-title">Predicted Flower Class is <span class="text-success font-weight-bold">{{results}}</span>.</h1>
+		</div>
+		<div class="row">
+			{% if results == 'setosa' %}
+                <img class="flower-pics" src="static/flower-pics/setosa.jpg" alt="setosa">
+            {% elif results == 'versicolor' %}
+                <img class="flower-pics" src="static/flower-pics/versicolor.jpg" alt="versicolor">
+            {% else %}
+            	<img class="flower-pics" src="static/flower-pics/virginica.jpg" alt="virginica">
+            {% endif %}
+		</div>
+		<div class="row">
+			<a href="{{ url_for('index') }}" class="btn home-btn" role='button'>Predict a new flower</a>
+		</div>
+	</div>
+	<br><br>
+{% endblock content %}

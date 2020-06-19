@@ -1,15 +1,78 @@
-<h1>FLASK APP RUNNING</h1>
-<h2>Please enter your flower measurements below:</h2>
-<form  method="POST">
-    {# This hidden_tag is a CSRF security feature. #}
-    {{ form.hidden_tag() }}
-    {{ form.sep_len.label }} {{form.sep_len}}
-    <br>
-    {{ form.sep_wid.label}} {{form.sep_wid}}
-    <br>
-    {{form.pet_len.label}}{{form.pet_len}}
-    <br>
-    {{form.pet_wid.label}}{{form.pet_wid}}
-    <br>
-    {{ form.submit() }}
-</form>
+{% extends "layout.html" %}
+{% block content %}
+    <div class="container" id="form-design">
+        <form  method="POST">
+            {# This hidden_tag is a CSRF security feature. #}
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Please enter your flower measurements below</legend>
+                <div id="errors">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                          {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                              {{ message }}
+                            </div>
+                          {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="form-group">
+                    {{ form.sep_len.label(class="form-control-label") }}
+                    {% if form.sep_len.errors %}
+                        {{ form.sep_len(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sep_len.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sep_len(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.sep_wid.label(class="form-control-label") }}
+                    {% if form.sep_wid.errors %}
+                        {{ form.sep_wid(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sep_wid.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sep_wid(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.pet_len.label(class="form-control-label") }}
+                    {% if form.pet_len.errors %}
+                        {{ form.pet_len(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.pet_len.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.pet_len(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.pet_wid.label(class="form-control-label") }}
+                    {% if form.pet_wid.errors %}
+                        {{ form.pet_wid(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.pet_wid.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.pet_wid(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn") }}
+            </div>
+        </form>
+    </div>
+{% endblock content %}
